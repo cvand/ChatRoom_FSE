@@ -6,11 +6,11 @@ div.container#chat-container
 			each m in pageData.messages
 				div.message-box
 					div.message-box-header
-						span #{m.name}
+						span #{m.user_name}
 						div.message-date.fright
-							span #{m.date}
+							span #{m.date_created}
 					div.message-box-body
-						span.message-text #{m.text}
+						span.message-text #{m.message}
 		div.col-md-6.participants-container
 			div.container-header
 				span Participants

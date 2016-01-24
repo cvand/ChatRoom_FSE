@@ -1,6 +1,7 @@
 var serverBaseUrl = document.domain;
 var socket;
 var sessionId = '';
+var sessionName = '';
 
 function init() {
 
@@ -75,19 +76,6 @@ function init() {
 	$('body').bind('beforeunload', disconnect);
 }
 
-function register_new_user() {
-	var name = $('#name').val();
-	if (name == '') {
-		alert("Please enter a name to enter the chat.");
-		return false;
-	}
-	socket.emit('newUser', {
-		id: sessionId,
-		name: $('#name').val()
-	});
-	return true;
-}
-
 // Helper function to update the participants' list
 function updateParticipants(participants) {
 	$('#participants').html('');
@@ -104,7 +92,7 @@ function updateParticipants(participants) {
  */
 function sendMessage() {
 	var outgoingMessage = $('#outgoingMessage').val();
-	var name = $('#name').val();
+	var name = sessionName;
 	$.ajax({
 		url: '/message',
 		type: 'POST',
@@ -142,6 +130,20 @@ function enter_chat() {
 	if (register_new_user()) {
 		load_chat();
 	}
+}
+
+function register_new_user() {
+	var name = $('#name').val();
+	if (name == '') {
+		alert("Please enter a name to enter the chat.");
+		return false;
+	}
+	sessionName = name;
+	socket.emit('newUser', {
+		id: sessionId,
+		name: $('#name').val()
+	});
+	return true;
 }
 
 function load_chat() {
