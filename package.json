@@ -14,6 +14,7 @@
     "jade": "^1.11.0",
     "socket.io": "^1.4.3",
     "sqlite3": "^3.1.1",
+    "bootstrap": "3.3.6",
     "underscore": "1.8.3"
   }
 }

@@ -64,20 +64,28 @@ function init() {
 	 * name
 	 */
 	socket.on('existingUserError', function(data) {
-		console.log(data.message);
-		alert(data.message);
+		if (data.socket == sessionId) {
+			$('#content').remove();
+			alert(data.message);
+			window.location.href = "/";
+		}
 	});
 
 	/* Elements setup */
-	
 	$('body').bind('beforeunload', disconnect);
 }
 
 function register_new_user() {
+	var name = $('#name').val();
+	if (name == '') {
+		alert("Please enter a name to enter the chat.");
+		return false;
+	}
 	socket.emit('newUser', {
 		id: sessionId,
 		name: $('#name').val()
 	});
+	return true;
 }
 
 // Helper function to update the participants' list
@@ -131,17 +139,9 @@ function outgoingMessageKeyUp() {
 }
 
 function enter_chat() {
-	register_new_user();
-	/*
-	 * When a user updates his/her name, let the server know by emitting the
-	 * "nameChange" event
-	 */
-//	var name = $('#name').val();
-//	socket.emit('nameChange', {
-//		id: sessionId,
-//		name: name
-//	});
-	load_chat();
+	if (register_new_user()) {
+		load_chat();
+	}
 }
 
 function load_chat() {
@@ -151,12 +151,15 @@ function load_chat() {
 		contentType: 'text/html',
 		success: function(data) {
 			console.log(data);
-//			$('#login-container').remove();
+			$('#login-container').remove();
 			$('#content').append(data);
+			
+			var exit_link = $('<li><a href="javascript:void(0);" onclick="exit_chat()">Exit</a></li>');
+			$('#actions-navbar').append(exit_link);
 			
 			$('#outgoingMessage').on('keydown', outgoingMessageKeyDown);
 			$('#outgoingMessage').on('keyup', outgoingMessageKeyUp);
-			$('#exit-chat').on('click', exit_chat);
+//			$('#exit-chat').on('click', exit_chat);
 			$('#send').on('click', sendMessage);
 		}
 	});

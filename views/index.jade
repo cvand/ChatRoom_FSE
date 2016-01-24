@@ -1,24 +1,34 @@
 doctype html
 html
-  head
-    link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans')
-    link(rel='stylesheet', href='/css/style.css')
-    script(src='//code.jquery.com/jquery-1.11.0.min.js')
-    script(src='/socket.io/socket.io.js')
-    script(src='/js/index.js')</b>
-    title FSE Chat Room
-  body
-    div.header
-      span.left FSE Chat Room
+	head
+		link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans')
+		link(rel='stylesheet', href='/css/style.css')
+		link(rel='stylesheet', href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css')
+		
+		script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+		script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
+		script(src='/socket.io/socket.io.js')
+		script(src='/js/index.js')</b>
+		title FSE Chat Room
+	body
+		div.header
+			nav.navbar.navbar-default
+				div.container-fluid
+					div.navbar-header
+						a(href="#").navbar-brand FSE Chat Room
+					ul.nav.navbar-nav
+						li
+							a(href="/") Home
 
-    div#content
-      div.container#login-container
-        div.container-header
-          h3 Welcome to FSE Chat Room
-        div.container-body
-          div.inlineBlock.nameform
-            div.form-group
-              span Please enter your name:
-              input(type="text", value="Anonymous", placeholder="Anonymous")#name.form-control
-            div.form-options
-              a(href="javascript:void();", onclick="enter_chat()")#enter-chat Enter chatroom
+					ul.nav.navbar-nav.navbar-right#actions-navbar
+		div#content
+			div.container#login-container
+				div.container-header
+					h3 Welcome to FSE Chat Room
+				div.container-body
+					div.inlineBlock.nameform
+						div.form-group
+							span Please enter your name:
+							input(type="text", placeholder="Anonymous")#name.form-control
+						div.form-options
+							a(href="javascript:void(0);", onclick="enter_chat()")#enter-chat Enter chatroom

@@ -44,8 +44,6 @@ app.use(bodyParser.json());
 // Handle route "GET /"
 app.get("/", function(request, response) {
 
-	console.log("--- / ---");
-	console.log(participants);
 	// Render the view called "index"
 	response.render("index");
 
@@ -53,8 +51,6 @@ app.get("/", function(request, response) {
 
 // Handle route "GET /chat"
 app.get("/chat", function(request, response) {
-	console.log("--- /chat ---");
-	console.log(participants);
 	response.render('view', {pageData: {messages : [{name: 'name 1', date: "2015-12-2 12:20", text: "this is a message"}, {name: 'name 2', date: "2015-12-2 12:23", text: "this is another message"}], participants : participants}});
 });
 
@@ -79,7 +75,7 @@ app.post("/message", function(request, response) {
 	});
 
 	// Looks good, let the client know
-	ressponse.status(200).json({
+	response.status(200).json({
 		message: "Message received"
 	})
 
@@ -96,21 +92,22 @@ io.on('connection', function(socket) {
 			name: data.name
 		});
 
-		// if (participant != undefined) {
-		// // there's an existing user with the same name
-		// io.sockets.emit("existingUserError", {
-		// message: "A user with the name " + data.name + " is already logged in
-		// the chat room. Please choose a different name."
-		// });
-		// } else {
-		participants.push({
-			id: data.id,
-			name: data.name
-		});
-		io.sockets.emit("newConnection", {
-			participants: participants
-		});
-		// }
+		 if (participant != undefined) {
+			 var socket_id = socket.id.replace("/#", "");
+			 // there's an existing user with the same name
+			 io.sockets.emit("existingUserError", {
+				 socket: socket_id,
+				 message: "A user with the name " + data.name + " is already logged in the chat room. Please choose a different name."
+			 });
+		 } else {
+			participants.push({
+				id: data.id,
+				name: data.name
+			});
+			io.sockets.emit("newConnection", {
+				participants: participants
+			});
+		 }
 	});
 
 	/*
