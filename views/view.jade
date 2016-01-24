@@ -1,0 +1,25 @@
+		
+div.container#chat-container
+	div.container-header
+		h3 Public Chat Room
+	div.container-body
+		div.col-md-4.scrollbottom#messages
+			each m in pageData.messages
+				div.message-box
+					div.message-box-header
+						span #{m.name}
+						div.message-date.fright
+							span #{m.date}
+					div.message-box-body
+						span.message-text #{m.text}
+		div.col-md-6.participants-container
+			div.container-header
+				span Participants
+			div#participants
+				each p in pageData.participants
+					span(id="#{p.id}") #{p.name}
+		div.message-container
+			form#messageForm
+				textarea(rows="4", cols="40", placeholder="Share something", maxlength=200)#outgoingMessage
+				input(type="button", value="Share", disabled=true)#send
+

@@ -6,20 +6,19 @@ html
     script(src='//code.jquery.com/jquery-1.11.0.min.js')
     script(src='/socket.io/socket.io.js')
     script(src='/js/index.js')</b>
-    title Super Awesome Chatroom
+    title FSE Chat Room
   body
-    h1 Super Awesome Chatroom
-    div
-      div.inlineBlock
-        span Your name:
-          input(type="text", value="Anonymous")#name
-        br
-        form#messageForm
-          textarea(rows="4", cols="50", placeholder="Share something!", maxlength=200)#outgoingMessage
-          input(type="button", value="Share", disabled=true)#send
-      div.inlineBlock.topAligned
-        b Participants
-        br
-        div#participants
-    div#messages
+    div.header
+      span.left FSE Chat Room
 
+    div#content
+      div.container#login-container
+        div.container-header
+          h3 Welcome to FSE Chat Room
+        div.container-body
+          div.inlineBlock.nameform
+            div.form-group
+              span Please enter your name:
+              input(type="text", value="Anonymous", placeholder="Anonymous")#name.form-control
+            div.form-options
+              a(href="javascript:void();", onclick="enter_chat()")#enter-chat Enter chatroom

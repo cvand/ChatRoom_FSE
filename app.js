@@ -10,9 +10,14 @@
  * its module name.
  * 
  */
-var express = require("express"), app = express(), http = require("http").Server(app), bodyParser = require("body-parser"), io = require(
-				"socket.io")(http), _ = require("underscore");
-
+var express = require("express");
+var app = express();
+var http = require("http").Server(app);
+var bodyParser = require("body-parser");
+var io = require("socket.io")(http);
+var _ = require("underscore");
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('chatdb.db');
 /*
  * The list of participants in our chatroom. The format of each participant will
  * be: { id: "sessionId", name: "participantName" }
@@ -36,13 +41,21 @@ app.use(bodyParser.json());
 
 /* Server routing */
 
-// Handle route "GET /", as in "http://localhost:8080/"
+// Handle route "GET /"
 app.get("/", function(request, response) {
 
+	console.log("--- / ---");
 	console.log(participants);
 	// Render the view called "index"
 	response.render("index");
 
+});
+
+// Handle route "GET /chat"
+app.get("/chat", function(request, response) {
+	console.log("--- /chat ---");
+	console.log(participants);
+	response.render('view', {pageData: {messages : [{name: 'name 1', date: "2015-12-2 12:20", text: "this is a message"}, {name: 'name 2', date: "2015-12-2 12:23", text: "this is another message"}], participants : participants}});
 });
 
 // POST method to create a chat message
@@ -73,9 +86,6 @@ app.post("/message", function(request, response) {
 });
 
 io.on('connection', function(socket) {
-	console.log('--- a user connected ---');
-	console.log("Socket id: " + socket.id);
-	
 	/*
 	 * When a new user connects to our server, we expect an event called
 	 * "newUser" and then we'll emit an event called "newConnection" with a list
@@ -85,25 +95,22 @@ io.on('connection', function(socket) {
 		var participant = _.findWhere(participants, {
 			name: data.name
 		});
-		
-//		if (participant != undefined) {
-//			// there's an existing user with the same name
-//			io.sockets.emit("existingUserError", {
-//				message: "A user with the name " + data.name + " is already logged in the chat room. Please choose a different name." 
-//			});
-//		} else {
-			participants.push({
-				id: data.id,
-				name: data.name
-			});
 
-			console.log("After newUser: ");
-			console.log(participants);
-			
-			io.sockets.emit("newConnection", {
-				participants: participants
-			});
-//		}
+		// if (participant != undefined) {
+		// // there's an existing user with the same name
+		// io.sockets.emit("existingUserError", {
+		// message: "A user with the name " + data.name + " is already logged in
+		// the chat room. Please choose a different name."
+		// });
+		// } else {
+		participants.push({
+			id: data.id,
+			name: data.name
+		});
+		io.sockets.emit("newConnection", {
+			participants: participants
+		});
+		// }
 	});
 
 	/*
@@ -117,7 +124,7 @@ io.on('connection', function(socket) {
 		var participant = _.findWhere(participants, {
 			id: socket_id
 		});
-		
+
 		if (participant != undefined) {
 			participants = _.without(participants, participant);
 			participant.name = data.name;
@@ -133,18 +140,13 @@ io.on('connection', function(socket) {
 	 * disconnected
 	 */
 	socket.on("disconnect", function() {
-		console.log("---- disconnect ---");
-		console.log("Socket id: " + socket.id);
-		console.log("Before removing: ");
-		console.log(participants);
+		console.log("---- disconnect ----");
 		var socket_id = socket.id.replace("/#", "");
+		console.log(socket_id);
 		var part = _.findWhere(participants, {
 			id: socket_id
 		});
-		console.log(part);
 		participants = _.without(participants, part);
-		console.log("After removing: ");
-		console.log(participants);
 		io.sockets.emit("userDisconnected", {
 			id: socket.id,
 			sender: "system"
@@ -156,3 +158,32 @@ io.on('connection', function(socket) {
 http.listen(app.get("port"), app.get("ipaddr"), function() {
 	console.log("Server up and running. Go to http://" + app.get("ipaddr") + ":" + app.get("port"));
 });
+
+function saveUser(name, sesison_id) {
+	db.run("INSERT INTO 'chatdb'.'user' ('name', 'sessionId') VALUES (" + name + ", " + session_id + ")");
+}
+
+function removeUser(session_id) {
+	db.run("DELETE * from chatdb.user where sessionId =" + session_id);
+}
+
+function getUser(session_id) {
+	db.all("SELECT * FROM chatdb.user where sessionId = " + session_id, function(err,rows){
+		console.log(rows);
+	//	db.run("INSERT INTO 'chatdb'.'chat_message' ('message', 'user_id') VALUES (" + message + ", " + user.id + ")");
+	});
+}
+
+function getMessages() {
+	db.all("SELECT * FROM chatdb.chat_message order by date_created asc", function(err,rows){
+		console.log(rows);
+	});
+}
+
+function saveMessage(session_id, message) {
+	var user;
+	db.all("SELECT * FROM chatdb.user where sessionId = " + session_id, function(err,rows){
+		console.log(rows);
+	//	db.run("INSERT INTO 'chatdb'.'chat_message' ('message', 'user_id') VALUES (" + message + ", " + user.id + ")");
+	});
+}
