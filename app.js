@@ -18,6 +18,7 @@ var io = require("socket.io")(http);
 var _ = require("underscore");
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('chatdb.db');
+
 /*
  * The list of participants in our chatroom. The format of each participant will
  * be: { id: "sessionId", name: "participantName" }
@@ -44,6 +45,8 @@ app.use(bodyParser.json());
 // Handle route "GET /"
 app.get("/", function(request, response) {
 
+	
+	
 	// Render the view called "index"
 	response.render("index");
 
@@ -91,9 +94,9 @@ io.on('connection', function(socket) {
 		var participant = _.findWhere(participants, {
 			name: data.name
 		});
+		var socket_id = socket.id.replace("/#", "");
 
 		 if (participant != undefined) {
-			 var socket_id = socket.id.replace("/#", "");
 			 // there's an existing user with the same name
 			 io.sockets.emit("existingUserError", {
 				 socket: socket_id,
@@ -104,8 +107,13 @@ io.on('connection', function(socket) {
 				id: data.id,
 				name: data.name
 			});
+			saveUser(data.name, data.id);
 			io.sockets.emit("newConnection", {
 				participants: participants
+			});
+			
+			getUser(socket_id, function(user) {
+				console.log(user);
 			});
 		 }
 	});
@@ -156,30 +164,30 @@ http.listen(app.get("port"), app.get("ipaddr"), function() {
 	console.log("Server up and running. Go to http://" + app.get("ipaddr") + ":" + app.get("port"));
 });
 
-function saveUser(name, sesison_id) {
-	db.run("INSERT INTO 'chatdb'.'user' ('name', 'sessionId') VALUES (" + name + ", " + session_id + ")");
+function saveUser(name, session_id) {
+	db.run("INSERT INTO user VALUES (\"" + name + "\", \"" + session_id + "\")");
 }
 
 function removeUser(session_id) {
-	db.run("DELETE * from chatdb.user where sessionId =" + session_id);
+	db.run("DELETE * from user where sessionId = \"" + session_id + "\"");
 }
 
-function getUser(session_id) {
-	db.all("SELECT * FROM chatdb.user where sessionId = " + session_id, function(err,rows){
-		console.log(rows);
-	//	db.run("INSERT INTO 'chatdb'.'chat_message' ('message', 'user_id') VALUES (" + message + ", " + user.id + ")");
+function getUser(session_id, callback) {
+	db.all("SELECT * FROM user where sessionId = \"" + session_id + "\"", function(err,rows){
+		var user = _.first(rows);
+		callback(user);
 	});
 }
 
 function getMessages() {
-	db.all("SELECT * FROM chatdb.chat_message order by date_created asc", function(err,rows){
+	db.all("SELECT * FROM chat_message order by date_created asc", function(err,rows){
 		console.log(rows);
 	});
 }
 
 function saveMessage(session_id, message) {
 	var user;
-	db.all("SELECT * FROM chatdb.user where sessionId = " + session_id, function(err,rows){
+	db.all("SELECT * FROM user where sessionId = \"" + session_id + "\"", function(err,rows){
 		console.log(rows);
 	//	db.run("INSERT INTO 'chatdb'.'chat_message' ('message', 'user_id') VALUES (" + message + ", " + user.id + ")");
 	});
