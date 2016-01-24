@@ -151,7 +151,7 @@ io.on('connection', function(socket) {
 			if (participant != undefined) {
 				removeUser(socket_id, function() {
 					io.sockets.emit("userDisconnected", {
-						id: socket.id,
+						id: socket_id,
 						sender: "system"
 					});
 				});

@@ -81,8 +81,8 @@ function updateParticipants(participants) {
 	$('#participants').html('');
 	for (var i = 0; i < participants.length; i++) {
 		$('#participants').append(
-						'<span id="' + participants[i].id + '">' + participants[i].name + ' '
-										+ (participants[i].id === sessionId ? '(You)' : '') + '<br /></span>');
+						'<span id="' + participants[i].sessionId + '">' + participants[i].name + ' '
+										+ (participants[i].sessionId === sessionId ? '(You)' : '') + '<br /></span>');
 	}
 }
 
