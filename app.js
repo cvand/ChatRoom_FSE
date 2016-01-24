@@ -66,7 +66,7 @@ app.post("/message", function(request, response) {
 	});
 
 	// Looks good, let the client know
-	res.status(200).json({
+	ressponse.status(200).json({
 		message: "Message received"
 	})
 
