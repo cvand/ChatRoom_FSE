@@ -73,13 +73,15 @@ app.post("/message", function(request, response) {
 	// We also expect the sender's name with the message
 	var name = request.body.name;
 	
-	saveMessage(name, message);
-
-	// Let our chatroom know there was a new message
-	io.sockets.emit("incomingMessage", {
-		message: message,
-		name: name
+	saveMessage(name, message, function(m) {
+		// Let our chatroom know there was a new message
+		io.sockets.emit("incomingMessage", {
+			message: message,
+			name: name,
+			date: m.date_created
+		});
 	});
+
 
 	// Looks good, let the client know
 	response.status(200).json({
@@ -206,7 +208,10 @@ function getMessages(callback) {
 	});
 }
 
-function saveMessage(name, message) {
+function saveMessage(name, message, callback) {
 	db.run("INSERT INTO chat_message (message, user_name) VALUES (\"" + message + "\", \"" + name + "\")", function(err,rows){
+		db.all("SELECT * FROM chat_message where user_name = \"" + name + "\" and message = \"" + message + "\"", function(err,rows){
+			callback(_.first(rows));
+		});
 	});
 }

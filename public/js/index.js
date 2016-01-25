@@ -15,7 +15,6 @@ function init() {
 	 */
 	socket.on('connect', function() {
 		sessionId = socket.io.engine.id;
-		console.log('Connected ' + sessionId);
 	});
 
 	/*
@@ -40,7 +39,7 @@ function init() {
 	 * the span with the given ID accordingly
 	 */
 	socket.on('nameChanged', function(data) {
-		$('#' + data.id).html(data.name + ' ' + (data.id === sessionId ? '(You)' : '') + '<br />');
+		$('#' + data.id).html(data.name);
 	});
 
 	/*
@@ -50,7 +49,29 @@ function init() {
 	socket.on('incomingMessage', function(data) {
 		var message = data.message;
 		var name = data.name;
-		$('#messages').append('<b>' + name + '</b><br />' + message + '<hr />');
+		var date = data.date;
+		
+		var msg_box = $('<div></div').addClass('message-box');
+		var header = $('<div></div>').addClass('message-box-header');
+		var user_div = $('<div></div').addClass('inline-block w-8');
+		var span = $('<span></span>').html(name);
+		user_div.append(span);
+		
+		var date_div = $('<div></div').addClass('message-date w-4');
+		span = $('<span></span>').html(date);
+		date_div.append(span);
+		
+		header.append(user_div).append(date_div);
+		
+		var msg_div = $('<div></div').addClass('message-box-body');
+		span = $('<span></span>').html(message).addClass('message-text');
+		msg_div.append(span);
+		
+		msg_box.append(header).append(msg_div);
+		
+		
+		$('#messages').append(msg_box);
+		$("#messages").animate({ scrollTop: $('#messages').prop("scrollHeight")}, 1000);
 	});
 
 	/*
@@ -74,15 +95,23 @@ function init() {
 
 	/* Elements setup */
 	$('body').bind('beforeunload', disconnect);
+	$('#name').bind('keydown', enterChatKeyDown);
+	$("#name").focus();
 }
 
 // Helper function to update the participants' list
 function updateParticipants(participants) {
-	$('#participants').html('');
+	$('#participants-list').empty();
 	for (var i = 0; i < participants.length; i++) {
-		$('#participants').append(
-						'<span id="' + participants[i].sessionId + '">' + participants[i].name + ' '
-										+ (participants[i].sessionId === sessionId ? '(You)' : '') + '<br /></span>');
+		var element = $('<li>' + participants[i].name + '</li>').addClass('list-group-item').attr('id', participants[i].sessionId);
+		if (participants[i].sessionId === sessionId) {
+			element.addClass('active');
+		}
+		$('#participants-list').append(element);
+		
+//		$('#participants-list').append(
+//						'<li id="' + participants[i].sessionId + '" class="list-group-item">' + participants[i].name + ' '
+//										+ (participants[i].sessionId === sessionId ? '(You)' : '') + '</li>');
 	}
 }
 
@@ -126,6 +155,16 @@ function outgoingMessageKeyUp() {
 	$('#send').attr('disabled', (outgoingMessageValue.trim()).length > 0 ? false : true);
 }
 
+function enterChatKeyDown(event) {
+	if (event.which == 13) {
+		event.preventDefault();
+		if ($('#name').val().trim().length <= 0) { return; }
+		enter_chat();
+		$('#name').val('');
+	}
+}
+
+
 function enter_chat() {
 	if (register_new_user()) {
 		load_chat();
@@ -152,12 +191,21 @@ function load_chat() {
 		type: 'GET',
 		contentType: 'text/html',
 		success: function(data) {
-			console.log(data);
 			$('#login-container').remove();
 			$('#content').append(data);
 			
 			var exit_link = $('<li><a href="javascript:void(0);" onclick="exit_chat()">Exit</a></li>');
 			$('#actions-navbar').append(exit_link);
+			
+			$('#participants-list').children().each(function(item) {
+				var element = $(this);
+				if (element.attr('id') === sessionId) {
+					element.addClass('active');
+				}
+			});
+			
+			$("#messages").animate({ scrollTop: $('#messages').prop("scrollHeight")}, 1000);
+			$("#outgoingMessage").focus();
 			
 			$('#outgoingMessage').on('keydown', outgoingMessageKeyDown);
 			$('#outgoingMessage').on('keyup', outgoingMessageKeyUp);

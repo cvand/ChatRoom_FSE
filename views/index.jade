@@ -2,8 +2,8 @@ doctype html
 html
 	head
 		link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans')
-		link(rel='stylesheet', href='/css/style.css')
 		link(rel='stylesheet', href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css')
+		link(rel='stylesheet', href='/css/style.css')
 		
 		script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
 		script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
@@ -29,6 +29,6 @@ html
 					div.inlineBlock.nameform
 						div.form-group
 							span Please enter your name:
-							input(type="text", placeholder="Anonymous")#name.form-control
+							input(type="text", placeholder="Anonymous")#name.form-control.short
 						div.form-options
-							a(href="javascript:void(0);", onclick="enter_chat()")#enter-chat Enter chatroom
+							a(href="javascript:void(0);", onclick="enter_chat()").btn.btn-theme#enter-chat ENTER CHATROOM

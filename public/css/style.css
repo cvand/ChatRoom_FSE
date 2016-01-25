@@ -1,18 +1,72 @@
-body {
-  padding: 3em;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 1em;
+.w-8 {
+	width: 66.6%
 }
 
-textarea {
-  resize: none;
+.w-4 {
+	width: 33.3%
 }
 
-.inlineBlock {
- display: inline-block;
+.inline-block {
+	display: inline-block;
 }
 
-.topAligned {
- vertical-align: top;
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+  background-color: #99bcdb;
+  border-color: #99bcdb;
+  color: #fff;
+  z-index: 2;
+}
+
+textarea.form-control {
+  border-radius: 0;
+}
+
+.btn-theme {
+  background: #7a96af none repeat scroll 0 0;
+  border-radius: 0;
+  color: white;
+}
+
+#messages {
+  padding: 0;
+}
+
+.message-box {
+  border-bottom: thin solid #599470;
+  border-color: #599470;
+  border-width: thin;
+}
+
+.message-date {
+  color: #aaa;
+  text-align: right;
+  display: inline-block;
+}
+
+.message-box-header {
+  background: #eee none repeat scroll 0 0;
+  color: #777;
+  padding: 5px 5px 15px;
+}
+
+.message-box-body {
+  min-height: 60px;
+  padding: 10px;
+}
+
+.panel-body.scrollbottom {
+  max-height: 500px;
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+#send {
+  bottom: 21px;
+  position: absolute;
+  right: 16px;
+}
+
+.form-control.short {
+  max-width: 300px;
 }
 

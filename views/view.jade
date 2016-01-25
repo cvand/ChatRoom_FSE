@@ -1,24 +1,36 @@
 div.container#chat-container
-	div.container-header
-		h3 Public Chat Room
 	div.container-body
-		div.col-md-4.scrollbottom#messages
-			each m in pageData.messages
-				div.message-box
-					div.message-box-header
-						span #{m.user_name}
-						div.message-date.fright
-							span #{m.date_created}
-					div.message-box-body
-						span.message-text #{m.message}
-		div.col-md-6.participants-container
-			div.container-header
-				span Participants
-			div#participants
-				each p in pageData.participants
-					span(id="#{p.id}") #{p.name}
-		div.message-container
-			form#messageForm
-				textarea(rows="4", cols="40", placeholder="Share something", maxlength=200)#outgoingMessage
-				input(type="button", value="Share", disabled=true)#send
+	
+		div.col-md-7.chat-box
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title Public Chat Room
+				div.panel-body.scrollbottom#messages
+					each m in pageData.messages
+						div.message-box
+							div.message-box-header
+								div.w-8.inline-block
+									span #{m.user_name}
+								div.message-date.w-4
+									span #{m.date_created}
+							div.message-box-body
+								span.message-text #{m.message}
+							
+				div.message-container
+					form#messageForm
+						div
+							textarea(rows="4", cols="40", placeholder="Share something", maxlength=200).form-control#outgoingMessage
+							a(href="javascript:void(0)").btn.btn-theme#send POST
+						
+						
+		div.col-md-4.participants-container
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title Participants
+				div.panel-body
+					div#participants
+						ul.list-group#participants-list
+							each p in pageData.participants
+								li(id="#{p.sessionId}").list-group-item #{p.name}
+					
 
